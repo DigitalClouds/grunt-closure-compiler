@@ -197,9 +197,9 @@ Closure compiler can be used to procude multiple JS files, using the --module pa
         }
 
 
-### `useFlagFile` property
+### `useFlagsFile` property
 
-If the `````useFlagFile````` property is true, Closure will read the flags from a file rather than from the command line. The task will write the flags to this file and use it instead of writing them straight to the command line.
+If the `````useFlagsFile````` property is true, Closure will read the flags from a file rather than from the command line. The task will write the flags to this file and use it instead of writing them straight to the command line.
 
 ## Note
 
