@@ -25,7 +25,7 @@ module.exports = function(grunt) {
         if(data.closurePath){
             closurePath = data.closurePath + 'compiler.jar';
         }
-            
+        var flags = '';
         var command = 'java -jar "' + closurePath + '"';
         data.cwd = data.cwd || './';
 
@@ -41,19 +41,19 @@ module.exports = function(grunt) {
         //case : js parameter passed (no module then)
         if(data.js && data.js.length && data.js.length>0) {
 
-            command += ' --js "' + data.js.join('" --js "') + '"';
+            flags += ' --js "' + data.js.join('" --js "') + '"';
             if (data.jsOutputFile) {
                 if (!grunt.file.isPathAbsolute(data.jsOutputFile)) {
                     data.jsOutputFile = path.resolve('./') + '/' + data.jsOutputFile;
                 }
-                command += ' --js_output_file "' + data.jsOutputFile + '"';
+                flags += ' --js_output_file "' + data.jsOutputFile + '"';
                 reportFile = data.reportFile || data.jsOutputFile + '.report.txt';
             }
         }
 
         if (data.externs) {
             data.externs = grunt.file.expand(data.externs);
-            command += ' --externs ' + data.externs.join(' --externs ');
+            flags += ' --externs ' + data.externs.join(' --externs ');
 
             if (!data.externs.length) {
                 delete data.externs;
@@ -70,20 +70,20 @@ module.exports = function(grunt) {
         //adding module compilation support
         if(data.modules){
             if(data.modules.output_path_prefix){
-                command += ' --module_output_path_prefix ' + data.modules.output_path_prefix+' ';
+                flags += ' --module_output_path_prefix ' + data.modules.output_path_prefix+' ';
             }
             if(data.modules.definitions){
                 for(var module in data.modules.definitions){
                     for(var fileIndex = 0;fileIndex<data.modules.definitions[module].files.length;fileIndex++){
-                        command += ' --js ' +data.modules.definitions[module].files[fileIndex]+' ';
+                        flags += ' --js ' +data.modules.definitions[module].files[fileIndex]+' ';
                     }
-                    command += ' --module '+module+':'+data.modules.definitions[module].files.length;
+                    flags += ' --module '+module+':'+data.modules.definitions[module].files.length;
                     if(data.modules.definitions[module].dependencies && data.modules.definitions[module].dependencies.length>0){
-                        command+=':'+data.modules.definitions[module].dependencies.join(',');
+                        flags+=':'+data.modules.definitions[module].dependencies.join(',');
                     }
-                    command+= ' ';
+                    flags+= ' ';
                     if(data.modules.definitions[module].wrapper){
-                        command+='--module_wrapper '+module+':"'+data.modules.definitions[module].wrapper+'" ';
+                        flags+='--module_wrapper '+module+':"'+data.modules.definitions[module].wrapper+'" ';
                     }
                 }
 
@@ -93,11 +93,11 @@ module.exports = function(grunt) {
 
         for (var directive in data.options) {
             if (Array.isArray(data.options[directive])) {
-                command += ' --' + directive + ' ' + data.options[directive].join(' --' + directive + ' ');
+                flags += ' --' + directive + ' ' + data.options[directive].join(' --' + directive + ' ');
             } else if (data.options[directive] === undefined || data.options[directive] === null) {
-                command += ' --' + directive;
+                flags += ' --' + directive;
             } else {
-                command += ' --' + directive + ' "' + String(data.options[directive]) + '"';
+                flags += ' --' + directive + ' "' + String(data.options[directive]) + '"';
             }
         }
 
@@ -111,10 +111,24 @@ module.exports = function(grunt) {
             }
         }
 
-console.log(command);
+        var flagFilePath  = './'+data.modules.output_path_prefix+'/.flags';
+        if(data.useFlagsFile){
+            grunt.file.write(flagFilePath, flags);
+            command += ' --flagfile ' + flagFilePath;
+            console.log(flags);
+        }
+        else{
+            command += flags;
+        }
+
+        console.log(command);
+
 
         // Minify WebGraph class.
         exec(command, { maxBuffer: data.maxBuffer * 1024, cwd: data.cwd }, function(err, stdout, stderr) {
+            if(data.useFlagsFile){
+                grunt.file.delete(flagFilePath);
+            }
             if (err) {
                 grunt.warn(err);
                 done(false);

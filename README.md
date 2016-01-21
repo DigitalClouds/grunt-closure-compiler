@@ -180,7 +180,7 @@ Closure compiler can be used to procude multiple JS files, using the --module pa
 - ```wrapper``` : (Optional) string to wrap the resulting module code in. Placeholder for the code is %s. module name can be inserted using the placeholder %basename% (please refer to Closure Compiler documentation for more detailed information on wrapping).
 
     
-    	modules: {
+```    	modules: {
             output_path_prefix: '.\\compiled\\',
             definitions: {
                 'Core':{
@@ -196,6 +196,11 @@ Closure compiler can be used to procude multiple JS files, using the --module pa
             }
         }
 ```
+
+### `useFlagFile` property
+
+If the `````useFlagFile````` property is true, Closure will read the flags from a file rather than from the command line. The task will write the flags to this file and use it instead of writing them straight to the command line.
+
 ## Note
 
 grunt-closure-compiler initial development was founded by [Dijiwan](http://www.dijiwan.com/).
