@@ -180,7 +180,7 @@ Closure compiler can be used to procude multiple JS files, using the --module pa
 - ```wrapper``` : (Optional) string to wrap the resulting module code in. Placeholder for the code is %s. module name can be inserted using the placeholder %basename% (please refer to Closure Compiler documentation for more detailed information on wrapping).
 
     
-```    	modules: {
+    	modules: {
             output_path_prefix: '.\\compiled\\',
             definitions: {
                 'Core':{
@@ -195,7 +195,7 @@ Closure compiler can be used to procude multiple JS files, using the --module pa
                 }
             }
         }
-```
+
 
 ### `useFlagFile` property
 
